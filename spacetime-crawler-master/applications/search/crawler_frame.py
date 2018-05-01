@@ -65,6 +65,13 @@ def extract_next_links(rawDataObj):
     
     Suggested library: lxml
     '''
+    print("***********URL:           ", rawDataObj.url)             # self explanatory i hope
+    print("***********CONTENT:       ", rawDataObj.content)         # ALL the html source of the page.  parse this for links.
+    print("***********ERROR MSG:     ", rawDataObj.error_message)   # "not found", etc.
+    print("***********HEADERS:       ", rawDataObj.headers)         # part of the handshake
+    print("***********HTTP CODE:     ", rawDataObj.http_code)       # the 3 digit http code (like 404, etc.)
+    print("***********IS REDIRECTED: ", rawDataObj.is_redirected)   # how to tell is this is a trap!
+    print("***********FINAL URL:     ", rawDataObj.final_url)       # i think this only gets a value if this URL redirects you somewhere
     return outputLinks
 
 def is_valid(url):
