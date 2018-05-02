@@ -72,6 +72,9 @@ def extract_next_links(rawDataObj):
     print("***********HTTP CODE:     ", rawDataObj.http_code)       # the 3 digit http code (like 404, etc.)
     print("***********IS REDIRECTED: ", rawDataObj.is_redirected)   # how to tell is this is a trap!
     print("***********FINAL URL:     ", rawDataObj.final_url)       # i think this only gets a value if this URL redirects you somewhere
+
+    # add all the URL -STRINGS- to outputLinks
+    
     return outputLinks
 
 def is_valid(url):
@@ -84,6 +87,9 @@ def is_valid(url):
     parsed = urlparse(url)
     if parsed.scheme not in set(["http", "https"]):
         return False
+    # might want to use link.download() to check for crawler traps? ( i don't think so actually )
+    # ganglia example: https://ganglia.ics.uci.edu/?r=4hr&cs=&ce=&m=load_one&tab=m&vn=&hide-hf=false
+    #                                              ^ we don't care about anything past this question mark, i don't think
     try:
         return ".ics.uci.edu" in parsed.hostname \
             and not re.match(".*\.(css|js|bmp|gif|jpe?g|ico" + "|png|tiff?|mid|mp2|mp3|mp4"\
