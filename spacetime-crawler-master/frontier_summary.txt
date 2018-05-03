@@ -1,0 +1,17 @@
+url	download_complete
+www.ics.uci.edu/%7Egts/contact.html	complete
+www.ics.uci.edu/community	complete
+www.ics.uci.edu/community/news/view_news?id=1271	complete
+www.ics.uci.edu/%7Egts/facts.html	complete
+www.ics.uci.edu/%7Egts/words.html	complete
+www.ics.uci.edu/prospective	complete
+sprout.ics.uci.edu	complete
+intranet.ics.uci.edu	complete
+www.ics.uci.edu/%7Egts/stupid.html	complete
+calendar.ics.uci.edu/calendar.php	complete
+www.ics.uci.edu/community/news	complete
+www.ics.uci.edu/~gts	complete
+www.ics.uci.edu/%7Egts/students.html	complete
+www.ics.uci.edu/%7Egts/pats.html	complete
+www.ics.uci.edu	complete
+www.ics.uci.edu/%7Egts/pubs.html	complete
