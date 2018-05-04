@@ -1,8 +1,0 @@
-run the crawler:
-python applications\search\crawler.py -a amazon.ics.uci.edu -p 9100
-
-reset the frontier:
-python applications\search\reset_frontier.py -a amazon.ics.uci.edu -p 9100
-
-check the frontier (generate text file)
-python applications\search\check_frontier.py -a amazon.ics.uci.edu -p 9100
