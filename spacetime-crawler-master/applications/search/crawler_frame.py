@@ -79,24 +79,26 @@ def extract_next_links(rawDataObj):
 
     for link in links:
         url = link[2]
-        url.lstrip()
-        url.lstrip("/")
+        url = url.lstrip()
+        url = url.lstrip("/")
         #url.lstrip("//")
-        if len(url) == 1 or url[0] == "#" or url[0:6] == "mailto":
+        if len(url) <= 1 or \
+        url[0] == "#" or \
+        (len(url)>=6 and url[0:6] == "mailto"):
             continue
         if url[0:4] != "http" and url[0:4] != "www.":
             # the first 4 characters aren't "http" or "www.", so url is a relative path (starts with "/" or "." or "..")
             # construct the full path:
-            print "base: ", rawDataObj.url
-            print "Relative path found: ", url
+            #print "base: ", rawDataObj.url
+            #print "Relative path found: ", url
             if rawDataObj.url[-1]!="/":
                 url = rawDataObj.url+"/"+url
             else:
                 url = rawDataObj.url+url
 
-            print "final path found: ", url
+            #print "final path found: ", url
         outputLinks.append(url)
-        print "*****WOW***** (added to outputLinks) ", url
+#        print "*****WOW***** (added to outputLinks) ", url
 
     #print "\n\n*****WOW*****", outputLinks
     #print "\n\n"
