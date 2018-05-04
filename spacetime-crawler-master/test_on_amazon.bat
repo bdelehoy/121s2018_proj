@@ -1,11 +1,14 @@
 ECHO Startup.
-
 set want_to_check=%1
+
+ECHO **** Deleting existing .json files....
+DEL *.json
+ECHO **** Existing .json files deleted.
 
 ECHO **** Resetting frontier....
 python applications\search\reset_frontier.py -a amazon.ics.uci.edu -p 9100
-
 ECHO **** Done resetting frontier.
+
 ECHO **** Starting to crawl....
 python applications\search\crawler.py -a amazon.ics.uci.edu -p 9100
 ECHO **** Done crawling.
