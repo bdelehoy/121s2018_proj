@@ -52,7 +52,7 @@ class CrawlerFrame(IApplication):
         print (
             "Time time spent this session: ",
             time() - self.starttime, " seconds.")
-    
+
 def extract_next_links(rawDataObj):
     outputLinks = []
     '''
@@ -60,9 +60,9 @@ def extract_next_links(rawDataObj):
     datamodel/search/server_datamodel.py
     the return of this function should be a list of urls in their absolute form
     Validation of link via is_valid function is done later (see line 42).
-    It is not required to remove duplicates that have already been downloaded. 
+    It is not required to remove duplicates that have already been downloaded.
     The frontier takes care of that.
-    
+
     Suggested library: lxml
     '''
     print("***********URL:           ", rawDataObj.url)             # self explanatory i hope
@@ -72,26 +72,35 @@ def extract_next_links(rawDataObj):
     print("***********HTTP CODE:     ", rawDataObj.http_code)       # the 3 digit http code (like 404, etc.)
     print("***********IS REDIRECTED: ", rawDataObj.is_redirected)   # how to tell is this is a trap!
     print("***********FINAL URL:     ", rawDataObj.final_url)       # i think this only gets a value if this URL redirects you somewhere
-    
-    # add all the URL -STRINGS- to outputLinks 
-    links = html.iterlinks(rawDataObj.content)  # returns a list of ALL links, even to things like stylesheets and image assets 
+
+    # add all the URL -STRINGS- to outputLinks
+    links = html.iterlinks(rawDataObj.content)  # returns a list of ALL links, even to things like stylesheets and image assets
     #links = html.find_rel_links(rawDataObj.content, 'href')
-     
+
     for link in links:
         url = link[2]
+        url.lstrip()
+        url.lstrip("/")
+        #url.lstrip("//")
         if len(url) == 1 or url[0] == "#" or url[0:6] == "mailto":
             continue
         if url[0:4] != "http" and url[0:4] != "www.":
             # the first 4 characters aren't "http" or "www.", so url is a relative path (starts with "/" or "." or "..")
             # construct the full path:
+            print "base: ", rawDataObj.url
             print "Relative path found: ", url
-            pass
+            if rawDataObj.url[-1]!="/":
+                url = rawDataObj.url+"/"+url
+            else:
+                url = rawDataObj.url+url
+
+            print "final path found: ", url
         outputLinks.append(url)
         print "*****WOW***** (added to outputLinks) ", url
- 
-    #print "\n\n*****WOW*****", outputLinks 
-    #print "\n\n" 
-    
+
+    #print "\n\n*****WOW*****", outputLinks
+    #print "\n\n"
+
     return outputLinks
 
 def is_valid(url):
@@ -112,9 +121,9 @@ def is_valid(url):
             + "|thmx|mso|arff|rtf|jar|csv"\
             + "|rm|smil|wmv|swf|wma|zip|rar|gz|pdf)$", parsed.path.lower())
 
-        # might want to use link.download() to check for crawler traps? ( i don't think so actually ) 
-        # ganglia example: https://ganglia.ics.uci.edu/?r=4hr&cs=&ce=&m=load_one&tab=m&vn=&hide-hf=false 
-        #                                              ^ we don't care about anything past this question mark, i don't think    
+        # might want to use link.download() to check for crawler traps? ( i don't think so actually )
+        # ganglia example: https://ganglia.ics.uci.edu/?r=4hr&cs=&ce=&m=load_one&tab=m&vn=&hide-hf=false
+        #                                              ^ we don't care about anything past this question mark, i don't think
 
     except TypeError:
         print ("TypeError for ", parsed)
