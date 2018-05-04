@@ -77,11 +77,20 @@ def extract_next_links(rawDataObj):
     links = html.iterlinks(rawDataObj.content)  # returns a list of ALL links, even to things like stylesheets and image assets 
     #links = html.find_rel_links(rawDataObj.content, 'href')
      
-    for link in links: 
-        outputLinks.append(link[2]) 
+    for link in links:
+        url = link[2]
+        if len(url) == 1 or url[0] == "#" or url[0:6] == "mailto":
+            continue
+        if url[0:4] != "http" and url[0:4] != "www.":
+            # the first 4 characters aren't "http" or "www.", so url is a relative path (starts with "/" or "." or "..")
+            # construct the full path:
+            print "Relative path found: ", url
+            pass
+        outputLinks.append(url)
+        print "*****WOW***** (added to outputLinks) ", url
  
-    print "\n\n*****WOW*****", outputLinks 
-    print "\n\n" 
+    #print "\n\n*****WOW*****", outputLinks 
+    #print "\n\n" 
     
     return outputLinks
 
@@ -110,4 +119,3 @@ def is_valid(url):
     except TypeError:
         print ("TypeError for ", parsed)
         return False
-
