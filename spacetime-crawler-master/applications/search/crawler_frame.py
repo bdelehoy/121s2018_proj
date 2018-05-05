@@ -72,21 +72,23 @@ def extract_next_links(rawDataObj):
     print("***********HTTP CODE:     ", rawDataObj.http_code)       # the 3 digit http code (like 404, etc.)
     print("***********IS REDIRECTED: ", rawDataObj.is_redirected)   # how to tell is this is a trap!
     print("***********FINAL URL:     ", rawDataObj.final_url)       # i think this only gets a value if this URL redirects you somewhere
-    if not rawDataObj.http_code >=400 and rawDataObj.http_code <=599:
+    if not rawDataObj.http_code >=400 and rawDataObj.http_code <=599 and rawDataObj.error_message == None:
         # add all the URL -STRINGS- to outputLinks
-        links = html.iterlinks(rawDataObj.content)  # returns a list of ALL links, even to things like stylesheets and image assets
+        doc = html.fromstring(rawDataObj.content)
+        doc.make_links_absolute(rawDataObj.url)
+        links = html.iterlinks(doc)  # returns a list of ALL links, even to things like stylesheets and image assets
         #links = html.find_rel_links(rawDataObj.content, 'href')
 
         for link in links:
             url = link[2]
-            url = url.lstrip()
+            """url = url.lstrip()
             url = url.lstrip("/")
-            #url.lstrip("//")
+            #url.lstrip("//")"""
             if len(url) <= 1 or \
             url[0] == "#" or \
             (len(url)>=6 and url[0:6] == "mailto"):
                 continue
-            if url[0:4] != "http" and url[0:4] != "www.":
+            """if url[0:4] != "http" and url[0:4] != "www.":
                 # the first 4 characters aren't "http" or "www.", so url is a relative path (starts with "/" or "." or "..")
                 # construct the full path:
                 #print "base: ", rawDataObj.url
@@ -96,7 +98,7 @@ def extract_next_links(rawDataObj):
                 else:
                     url = rawDataObj.url+url
 
-                #print "final path found: ", url
+                #print "final path found: ", url"""
             outputLinks.append(url)
     #        print "*****WOW***** (added to outputLinks) ", url
 
