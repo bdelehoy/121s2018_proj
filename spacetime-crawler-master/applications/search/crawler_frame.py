@@ -30,7 +30,7 @@ class CrawlerFrame(IApplication):
             print "Resuming from the previous state."
             self.download_links(links)
         else:
-            l = DelehoybMshoshanUfperezLink("wics.ics.uci.edu/")
+            l = DelehoybMshoshanUfperezLink("http://www.ics.uci.edu/")
             print l.full_url
             self.frame.add(l)
 
@@ -65,77 +65,47 @@ def extract_next_links(rawDataObj):
 
     Suggested library: lxml
     '''
-    print "\t***********URL:           ", rawDataObj.url             # self explanatory i hope
-    #print "\t***********CONTENT:       ", rawDataObj.content         # ALL the html source of the page.  parse this for links.
-    print "\t***********ERROR MSG:     ", rawDataObj.error_message   # "not found", etc.
-    print "\t***********HEADERS:       ", rawDataObj.headers         # part of the handshake
-    print "\t***********HTTP CODE:     ", rawDataObj.http_code       # the 3 digit http code (like 404, etc.)
-    print "\t***********IS REDIRECTED: ", rawDataObj.is_redirected   # how to tell is this is a trap!
-    print "\t***********FINAL URL:     ", rawDataObj.final_url       # i think this only gets a value if this URL redirects you somewhere
-    
+    print("***********URL:           ", rawDataObj.url)             # self explanatory i hope
+    #print("***********CONTENT:       ", rawDataObj.content)         # ALL the html source of the page.  parse this for links.
+    print("***********ERROR MSG:     ", rawDataObj.error_message)   # "not found", etc.
+    print("***********HEADERS:       ", rawDataObj.headers)         # part of the handshake
+    print("***********HTTP CODE:     ", rawDataObj.http_code)       # the 3 digit http code (like 404, etc.)
+    print("***********IS REDIRECTED: ", rawDataObj.is_redirected)   # how to tell is this is a trap!
+    print("***********FINAL URL:     ", rawDataObj.final_url)       # i think this only gets a value if this URL redirects you somewhere
     if not rawDataObj.http_code >=400 and rawDataObj.http_code <=599 and rawDataObj.error_message == None:
+        # add all the URL -STRINGS- to outputLinks
         doc = html.fromstring(rawDataObj.content)
         doc.make_links_absolute(rawDataObj.url)
         links = html.iterlinks(doc)  # returns a list of ALL links, even to things like stylesheets and image assets
+        #links = html.find_rel_links(rawDataObj.content, 'href')
 
         for link in links:
             url = link[2]
-            # if the URL is 1 character long or less...
-            # if the first character of the URL is a "#"...
-            # or if the first 6 characters start with "mailto:"
-            # then skip this URL, don't add it to the frontier
+            """url = url.lstrip()
+            url = url.lstrip("/")
+            #url.lstrip("//")"""
             if len(url) <= 1 or \
-               url[0] == "#" or \
-               (len(url)>=6 and url[0:6] == "mailto"):
+            url[0] == "#" or \
+            (len(url)>=6 and url[0:6] == "mailto"):
                 continue
-            outputLinks.append(url)
-    #        print "\t*****WOW***** (added to outputLinks) ", url
+            """if url[0:4] != "http" and url[0:4] != "www.":
+                # the first 4 characters aren't "http" or "www.", so url is a relative path (starts with "/" or "." or "..")
+                # construct the full path:
+                #print "base: ", rawDataObj.url
+                #print "Relative path found: ", url
+                if rawDataObj.url[-1]!="/":
+                    url = rawDataObj.url+"/"+url
+                else:
+                    url = rawDataObj.url+url
 
-    #print "\n\n\t*****WOW*****", outputLinks
+                #print "final path found: ", url"""
+            outputLinks.append(url)
+    #        print "*****WOW***** (added to outputLinks) ", url
+
+    #print "\n\n*****WOW*****", outputLinks
     #print "\n\n"
 
     return outputLinks
-
-def not_a_trap(parsed, url):
-    complete_queries = parse_qs(parsed.query)    # queries is a dictionary of {query:value}
-    # if there are no queries, then let it pass
-    if len(complete_queries) == 0:
-        return True
-
-    query_strings = [q for q in complete_queries.keys()]
-    # append "=" to the end of every query
-    for i in range(len(query_strings)):
-        query_strings[i] += "="
-
-    # check if queries are "date" or end in a specific token (if they do, then this url is a trap)
-    for q in query_strings:
-        q = q.lower()
-        if q == "date=" \
-        or "_id=" in q or "-id=" in q \
-        or "_token=" in q or "-token=" in q \
-        or "_key=" in q or "-key=" in q:
-            # all queries are guaranteed to end in "="
-            print "\t\tThrew a URL away due to date, id, key, or token in queries:", url
-            return False
-    
-    directories = parsed.path.split('/')
-    # quick n dirty way to remove empty strings from urls like: "/dir1/dir2/dir3/"
-    # (that start and end with a "/", then there will be 2 empty strings in directory, which we don't want)
-    for i in range(directories.count("")):
-        directories.remove("")
-
-    # check for long paths in the url of an arbitrarily long path
-    arbitrary_long_path_length = 13
-    if len(directories) >= arbitrary_long_path_length:
-        print "\t\tThrew a URL away due to too many directories:", url
-        return False
-    
-    # check for repeating directories:
-    directories_set = set(directories)
-    if len(directories) != len(directories_set):
-        print "\t\tThrew a URL away due to duplicate directories:", url
-        return False
-    return True
 
 def is_valid(url):
     '''
@@ -145,23 +115,19 @@ def is_valid(url):
     This is a great place to filter out crawler traps.
     '''
     parsed = urlparse(url)
-    #print "\t\tParsed: ", parsed
     if parsed.scheme not in set(["http", "https"]):
         return False
     try:
-        # if the url is absolute...
-        # and it isn't a crawler trap....
-        # and ".ics.uci.edu" is in the hostname....
-        # and it doesn't match that regular expression....
-        # then this is a valid URL.
-        return bool(urlparse(url).netloc) \
-            and not_a_trap(parsed, url) \
-            and ".ics.uci.edu" in parsed.hostname \
+        return ".ics.uci.edu" in parsed.hostname \
             and not re.match(".*\.(css|js|bmp|gif|jpe?g|ico" + "|png|tiff?|mid|mp2|mp3|mp4"\
             + "|wav|avi|mov|mpeg|ram|m4v|mkv|ogg|ogv|pdf" \
             + "|ps|eps|tex|ppt|pptx|doc|docx|xls|xlsx|names|data|dat|exe|bz2|tar|msi|bin|7z|psd|dmg|iso|epub|dll|cnf|tgz|sha1" \
             + "|thmx|mso|arff|rtf|jar|csv"\
             + "|rm|smil|wmv|swf|wma|zip|rar|gz|pdf)$", parsed.path.lower())
+
+        # might want to use link.download() to check for crawler traps? ( i don't think so actually )
+        # ganglia example: https://ganglia.ics.uci.edu/?r=4hr&cs=&ce=&m=load_one&tab=m&vn=&hide-hf=false
+        #                                              ^ we don't care about anything past this question mark, i don't think
 
     except TypeError:
         print ("TypeError for ", parsed)
