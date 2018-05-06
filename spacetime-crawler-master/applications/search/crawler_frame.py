@@ -6,6 +6,11 @@ from lxml import html,etree
 import re, os
 from time import time
 from uuid import uuid4
+#global varialbes *********
+#global best_url
+#best_url=" "
+#global best_outgoing
+#best_outgoing=0
 
 from urlparse import urlparse, parse_qs
 from uuid import uuid4
@@ -15,12 +20,20 @@ LOG_HEADER = "[CRAWLER]"
 
 @Producer(DelehoybMshoshanUfperezLink)
 @GetterSetter(OneDelehoybMshoshanUfperezUnProcessedLink)
+
+
+
 class CrawlerFrame(IApplication):
+
+
     app_id = "DelehoybMshoshanUfperez"
 
     def __init__(self, frame):
         self.app_id = "DelehoybMshoshanUfperez"
         self.frame = frame
+        self.outgoing=0
+        self.best_url=""
+        self.subs={}
 
 
     def initialize(self):
@@ -40,13 +53,46 @@ class CrawlerFrame(IApplication):
             self.download_links(unprocessed_links)
 
     def download_links(self, unprocessed_links):
+        count =0
+        fout = open('analytics.txt', 'w')
         for link in unprocessed_links:
+            count=0
             print "Got a link to download:", link.full_url
             downloaded = link.download()
             links = extract_next_links(downloaded)
+            if len(links) >self.outgoing:
+                self.outgoing=len(links)
+                self.best_url= downloaded.url
+            mainUrl=urlparse(downloaded.url)
+
+            if (mainUrl.scheme+"://"+mainUrl.netloc) not in self.subs.keys():
+                self.subs[mainUrl.scheme+"://"+mainUrl.netloc]=set()
+            #    print mainUrl.scheme+"://"+mainUrl.netloc
+
+
+
             for l in links:
+
                 if is_valid(l):
+                    linkUrl=urlparse(l)
+                    if (mainUrl.scheme+"://"+mainUrl.netloc) == (linkUrl.scheme+"://"+linkUrl.netloc):
+                    #    print mainUrl.scheme+"://"+mainUrl.netloc
+                        self.subs[mainUrl.scheme+"://"+mainUrl.netloc].add(linkUrl.path)
+                #    if(mainUrl.path!=""):
+                #        self.subs[mainUrl.scheme+"://"+mainUrl.netloc].add(mainUrl.path)
                     self.frame.add(DelehoybMshoshanUfperezLink(l))
+                    count+=1
+            #if count >self.outgoing:
+            #    self.outgoing=count
+            #    self.best_url= downloaded.url
+        analytics=""
+        analytics+="1. subdomains : processed urls : \n"
+        for i in self.subs:
+            #print i + " : "+str(len(self.subs[i]))
+            analytics+=i +" : "+str(len(self.subs[i])) +"\n"
+        analytics+="\n2. url with most outgoing links: \n"+self.best_url+" : "+str(self.outgoing)
+        fout.write(analytics)
+        fout.close()
 
     def shutdown(self):
         print (
@@ -54,6 +100,7 @@ class CrawlerFrame(IApplication):
             time() - self.starttime, " seconds.")
 
 def extract_next_links(rawDataObj):
+
     outputLinks = []
     '''
     rawDataObj is an object of type UrlResponse declared at L20-30
@@ -65,13 +112,13 @@ def extract_next_links(rawDataObj):
 
     Suggested library: lxml
     '''
-    print("***********URL:           ", rawDataObj.url)             # self explanatory i hope
+#    print("***********URL:           ", rawDataObj.url)             # self explanatory i hope
     #print("***********CONTENT:       ", rawDataObj.content)         # ALL the html source of the page.  parse this for links.
-    print("***********ERROR MSG:     ", rawDataObj.error_message)   # "not found", etc.
-    print("***********HEADERS:       ", rawDataObj.headers)         # part of the handshake
-    print("***********HTTP CODE:     ", rawDataObj.http_code)       # the 3 digit http code (like 404, etc.)
-    print("***********IS REDIRECTED: ", rawDataObj.is_redirected)   # how to tell is this is a trap!
-    print("***********FINAL URL:     ", rawDataObj.final_url)       # i think this only gets a value if this URL redirects you somewhere
+#    print("***********ERROR MSG:     ", rawDataObj.error_message)   # "not found", etc.
+#    print("***********HEADERS:       ", rawDataObj.headers)         # part of the handshake
+#    print("***********HTTP CODE:     ", rawDataObj.http_code)       # the 3 digit http code (like 404, etc.)
+#    print("***********IS REDIRECTED: ", rawDataObj.is_redirected)   # how to tell is this is a trap!
+#    print("***********FINAL URL:     ", rawDataObj.final_url)       # i think this only gets a value if this URL redirects you somewhere
     if not rawDataObj.http_code >=400 and rawDataObj.http_code <=599 and rawDataObj.error_message == None:
         # add all the URL -STRINGS- to outputLinks
         doc = html.fromstring(rawDataObj.content)

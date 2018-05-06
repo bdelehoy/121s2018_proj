@@ -1,0 +1,5 @@
+1. subdomains : processed urls : 
+http://www.ics.uci.edu : 109
+
+2. url with most outgoing links: 
+http://www.ics.uci.edu/ugrad : 92
