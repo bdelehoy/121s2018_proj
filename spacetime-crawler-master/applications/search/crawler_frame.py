@@ -59,7 +59,7 @@ class CrawlerFrame(IApplication):
                 if mainUrl.scheme=="" and mainUrl.netloc=="":
                     self.subs[mainUrl.path]=set()
                 else:
-                    self.subs[mainUrl.netloc]=set()
+                    self.subs["://"+mainUrl.netloc]=set()
                     
 
             for l in links:
