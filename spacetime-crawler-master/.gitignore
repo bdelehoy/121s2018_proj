@@ -2,3 +2,4 @@
 *.json
 back.py
 frontier_summary.txt
+analytics.txt

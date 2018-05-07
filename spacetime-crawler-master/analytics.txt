@@ -1,5 +1,11 @@
 1. subdomains : processed urls : 
-://wics.ics.uci.edu : 29
+://calendar.ics.uci.edu : 6
+://honors.ics.uci.edu : 0
+://mcs.ics.uci.edu : 0
+://ugradforms.ics.uci.edu : 1
+://mhcid.ics.uci.edu : 0
+://ngs.ics.uci.edu : 0
+://www.ics.uci.edu : 63
 
 2. url with most outgoing links: 
-http://wics.ics.uci.edu/news : 133
+http://www.ics.uci.edu/community/news/index.php : 365

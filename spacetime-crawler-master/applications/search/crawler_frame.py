@@ -33,7 +33,7 @@ class CrawlerFrame(IApplication):
             print "Resuming from the previous state."
             self.download_links(links)
         else:
-            l = DelehoybMshoshanUfperezLink("wics.ics.uci.edu/")
+            l = DelehoybMshoshanUfperezLink("http://www.ics.uci.edu/")
             print l.full_url
             self.frame.add(l)
 
@@ -53,15 +53,13 @@ class CrawlerFrame(IApplication):
                 self.best_url= downloaded.url
             mainUrl=urlparse(downloaded.url)
             
-            if mainUrl.netloc not in self.subs.keys()and mainUrl.path not in self.subs.keys():
-                
-                print mainUrl
+            if mainUrl.netloc not in self.subs.keys()and mainUrl.path not in self.subs.keys():    
+                #print mainUrl
                 if mainUrl.scheme=="" and mainUrl.netloc=="":
                     self.subs[mainUrl.path]=set()
                 else:
                     self.subs["://"+mainUrl.netloc]=set()
-                    
-
+            
             for l in links:
                 if is_valid(l):
                     linkUrl=urlparse(l)
@@ -72,11 +70,11 @@ class CrawlerFrame(IApplication):
                         else:
                             self.subs[mainUrl.path].add(linkUrl.path)
                     self.frame.add(DelehoybMshoshanUfperezLink(l))
-            analytics=""
-            analytics+="1. subdomains : processed urls : \n"
+            analytics = ""
+            analytics += "1. subdomains : processed urls : \n"
             for i in self.subs:
-                analytics+=i +" : "+str(len(self.subs[i])) +"\n"
-            analytics+="\n2. url with most outgoing links: \n"+self.best_url+" : "+str(self.outgoing)
+                analytics += i + " : " + str(len(self.subs[i])) + "\n"
+            analytics += "\n2. url with most outgoing links: \n" + self.best_url + " : " + str(self.outgoing)
             f.write(analytics)
             f.close()
 
@@ -146,7 +144,7 @@ def not_a_trap(parsed, url):
         or "_token=" in q or "-token=" in q \
         or "_key=" in q or "-key=" in q:
             # all queries are guaranteed to end in "="
-            print "\t\tThrew a URL away due to date, id, key, or token in queries:", url
+            print "\tThrew a URL away due to date, id, key, or token in queries:\n\t", url
             return False
 
     directories = parsed.path.split('/')
@@ -158,13 +156,13 @@ def not_a_trap(parsed, url):
     # check for long paths in the url of an arbitrarily long path
     arbitrary_long_path_length = 13
     if len(directories) >= arbitrary_long_path_length:
-        print "\t\tThrew a URL away due to too many directories:", url
+        print "\tThrew a URL away due to having at least", arbitrary_long_path_length, "directories:\n\t", url
         return False
 
     # check for repeating directories:
     directories_set = set(directories)
     if len(directories) != len(directories_set):
-        print "\t\tThrew a URL away due to duplicate directories:", url
+        print "\tThrew a URL away due to duplicate directories:\n\t", url
         return False
     return True
 
