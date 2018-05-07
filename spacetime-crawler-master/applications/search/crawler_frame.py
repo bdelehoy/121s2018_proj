@@ -56,7 +56,7 @@ class CrawlerFrame(IApplication):
             if mainUrl.netloc not in self.subs.keys()and mainUrl.path not in self.subs.keys():
                 
                 print mainUrl
-                if mainUrl.scheme="" and mainUrl.netloc="":
+                if mainUrl.scheme=="" and mainUrl.netloc=="":
                     self.subs[mainUrl.path]=set()
                 else:
                     self.subs[mainUrl.netloc]=set()
