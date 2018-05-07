@@ -53,7 +53,7 @@ class CrawlerFrame(IApplication):
                 self.best_url= downloaded.url
             mainUrl=urlparse(downloaded.url)
             
-            if mainUrl.netloc not in self.subs.keys() mainUrl.path not in self.subs.keys():
+            if mainUrl.netloc not in self.subs.keys()and mainUrl.path not in self.subs.keys():
                 
                 print mainUrl
                 if mainUrl.scheme="" and mainUrl.netloc="":
