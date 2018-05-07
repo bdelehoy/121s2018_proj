@@ -66,7 +66,10 @@ class CrawlerFrame(IApplication):
                 if is_valid(l):
                     linkUrl=urlparse(l)
                     if (mainUrl.netloc) == (linkUrl.netloc):
-                        self.subs[mainUrl.netloc].add(linkUrl.path)
+                        if mainUrl.netloc!="":
+                            self.subs["://"+mainUrl.netloc].add(linkUrl.path)
+                        else:
+                            self.subs[mainUrl.path].add(linkUrl.path)
                     self.frame.add(DelehoybMshoshanUfperezLink(l))
             analytics=""
             analytics+="1. subdomains : processed urls : \n"
