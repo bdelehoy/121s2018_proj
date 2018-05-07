@@ -65,7 +65,8 @@ class CrawlerFrame(IApplication):
             for l in links:
                 if is_valid(l):
                     linkUrl=urlparse(l)
-                    if (mainUrl.netloc) == (linkUrl.netloc):
+                    # have this check because the way we currently parse sometimes has the netloc ="" and what would normally be there is parced into the path
+                    if (mainUrl.netloc) == (linkUrl.netloc) or (mainUrl.path) == (linkUrl.netloc):
                         if mainUrl.netloc!="":
                             self.subs["://"+mainUrl.netloc].add(linkUrl.path)
                         else:

@@ -1,0 +1,5 @@
+1. subdomains : processed urls : 
+://wics.ics.uci.edu : 29
+
+2. url with most outgoing links: 
+http://wics.ics.uci.edu/news : 133
