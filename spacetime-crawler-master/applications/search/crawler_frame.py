@@ -54,10 +54,12 @@ class CrawlerFrame(IApplication):
             mainUrl=urlparse(downloaded.url)
             
             if (mainUrl.scheme+"://"+mainUrl.netloc) not in self.subs.keys():
-                self.subs[mainUrl.scheme+"://"+mainUrl.netloc]=set()
+                
                 print mainUrl
                 if mainUrl.scheme="" and mainUrl.netloc="":
                     self.subs[mainUrl.path]=set()
+                else:
+                    self.subs[mainUrl.scheme+"://"+mainUrl.netloc]=set()
                     
 
             for l in links:
