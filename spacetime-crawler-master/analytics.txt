@@ -1,5 +1,6 @@
 1. subdomains : processed urls : 
-http://www.ics.uci.edu : 109
+http://wics.ics.uci.edu : 29
+:// : 0
 
 2. url with most outgoing links: 
-http://www.ics.uci.edu/ugrad : 92
+http://wics.ics.uci.edu/category/init-together : 127
