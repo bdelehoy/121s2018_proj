@@ -19,22 +19,31 @@ with open(BK_PATH) as f:
 
 def get_ids():
     result = []
-    counter = 0
+    counter = 0     # accounts for only collecting up to MAX_ENTRIES documents
     for folder in range(FOLDERMAX+1):
         for file in range(FILEMAX+1):
             counter += 1
-            if counter <= MAX_ENTRIES:  # accounts for only collecting up to MAX_ENTRIES documents
+            if counter <= MAX_ENTRIES:
                 one_id = str(folder) + '/' + str(file)
                 result.append(one_id)
     return result
+
+def get_doc_strings(s):
+    return [repr(string) for string in s.stripped_strings]
 
 def main():
     print "Starting to build indices:"
     all_ids = get_ids()
     for docid in all_ids:
         try:
-            print "Tokenizing document {}: {}\n".format(docid, PAGES[docid])
-            
+            print "***** Tokenizing document {}: {}\n".format(docid, PAGES[docid])
+            page_file = open("./WEBPAGES_RAW/" + docid)
+            soup = BeautifulSoup(page_file, 'html.parser')
+#            strings = get_doc_strings(soup)
+#            print strings
+            print soup.get_text(strip=True)
+            page_file.close()
+
         except KeyError:
             print "File does not exist at", docid
 
