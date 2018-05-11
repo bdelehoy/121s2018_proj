@@ -17,6 +17,7 @@ BK_PATH = './WEBPAGES_RAW/bookkeeping.json'
 with open(BK_PATH) as f:
     PAGES = json.load(f)
 
+
 def get_ids():
     result = []
     counter = 0     # accounts for only collecting up to MAX_ENTRIES documents
@@ -28,21 +29,29 @@ def get_ids():
                 result.append(one_id)
     return result
 
+
 def get_doc_strings(s):
     return [repr(string) for string in s.stripped_strings]
+
+
+def process_document(docid):
+    print "***** Tokenizing document {}: {}\n".format(docid, PAGES[docid])
+    page_file = open("./WEBPAGES_RAW/" + docid)
+    soup = BeautifulSoup(page_file, 'html.parser')
+
+    #strings = get_doc_strings(soup)
+    #print strings
+    print soup.get_text(strip=True)
+
+    page_file.close()
+
 
 def main():
     print "Starting to build indices:"
     all_ids = get_ids()
     for docid in all_ids:
         try:
-            print "***** Tokenizing document {}: {}\n".format(docid, PAGES[docid])
-            page_file = open("./WEBPAGES_RAW/" + docid)
-            soup = BeautifulSoup(page_file, 'html.parser')
-#            strings = get_doc_strings(soup)
-#            print strings
-            print soup.get_text(strip=True)
-            page_file.close()
+            process_document(docid)
 
         except KeyError:
             print "File does not exist at", docid
