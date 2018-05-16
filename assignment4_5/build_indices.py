@@ -31,19 +31,28 @@ def get_ids():
 
 
 def get_doc_strings(s):
-    return [repr(string) for string in s.stripped_strings]
+    """Returns the text from a web page.  s is a BeautifulSoup object."""
+    #return [repr(string) for string in s.stripped_strings]
+    return s.get_text(strip=True)
+
+
+def get_url_from_docid(docid):
+    return PAGES[docid]
 
 
 def process_document(docid):
-    print "***** Tokenizing document {}: {}\n".format(docid, PAGES[docid])
-    page_file = open("./WEBPAGES_RAW/" + docid)
-    soup = BeautifulSoup(page_file, 'html.parser')
+    print "***** Tokenizing document {}: {}".format(docid, PAGES[docid])            # DEBUG
+    print "***** URL: " + get_url_from_docid(docid) + "\n"                          # DEBUG
+    webpage_file = open("./WEBPAGES_RAW/" + docid)     # the HTML code of that document
+    soup = BeautifulSoup(webpage_file, 'html.parser')
 
-    #strings = get_doc_strings(soup)
-    #print strings
-    print soup.get_text(strip=True)
+    print "***** START PAGE TEXT *****"                                             # DEBUG
+    strings = get_doc_strings(soup)
+    print strings                                                                   # DEBUG
+    # add each token to a dict and write that to a json file here, i think
+    print "***** END OF PAGE TEXT *****\n\n"                                        # DEBUG
 
-    page_file.close()
+    webpage_file.close()
 
 
 def main():
