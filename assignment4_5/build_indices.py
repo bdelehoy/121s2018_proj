@@ -7,6 +7,7 @@
 
 import json
 import pymongo
+import re 
 from bs4 import BeautifulSoup
 
 MAX_ENTRIES = 10
@@ -39,7 +40,15 @@ def get_doc_strings(s):
 def get_url_from_docid(docid):
     return PAGES[docid]
 
-
+def prune_tokens(t):
+    x = []
+    
+    for i in t:
+        temp = re.sub('[^0-9a-zA-Z]+', ' ', i)
+        x.extend(temp.split())
+        
+    print x
+    return x
 def process_document(docid):
     print "***** Tokenizing document {}".format(docid)                              # DEBUG
     print "***** URL: " + get_url_from_docid(docid) + "\n"                          # DEBUG
@@ -48,7 +57,12 @@ def process_document(docid):
 
     print "***** START PAGE TEXT *****"                                             # DEBUG
     strings = get_doc_strings(soup)
-    print strings                                                                   # DEBUG
+    #print strings                                                                   # DEBUG
+    tokens = strings.split()
+    tokens = prune_tokens(tokens)
+
+    #print tokens
+	
     # add each token to a dict and write that to a json file here, i think
     print "***** END OF PAGE TEXT *****\n\n"                                        # DEBUG
 
