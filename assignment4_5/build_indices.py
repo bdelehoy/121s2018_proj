@@ -41,7 +41,7 @@ def get_url_from_docid(docid):
 
 
 def process_document(docid):
-    print "***** Tokenizing document {}: {}".format(docid, PAGES[docid])            # DEBUG
+    print "***** Tokenizing document {}".format(docid)                              # DEBUG
     print "***** URL: " + get_url_from_docid(docid) + "\n"                          # DEBUG
     webpage_file = open("./WEBPAGES_RAW/" + docid)     # the HTML code of that document
     soup = BeautifulSoup(webpage_file, 'html.parser')
