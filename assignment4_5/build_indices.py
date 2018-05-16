@@ -33,7 +33,7 @@ def get_ids():
 def get_doc_strings(s):
     """Returns the text from a web page.  s is a BeautifulSoup object."""
     #return [repr(string) for string in s.stripped_strings]
-    return s.get_text(strip=True)
+    return s.get_text(strip=True).encode("utf-8")
 
 
 def get_url_from_docid(docid):
