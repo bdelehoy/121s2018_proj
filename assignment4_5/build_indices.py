@@ -44,7 +44,7 @@ def prune_tokens(t):
     x = []
     
     for i in t:
-        temp = re.sub('[^0-9a-zA-Z]+', ' ', i)
+        temp = re.sub('[^0-9a-zA-Z\--/\d]+', ' ', i)
         x.extend(temp.split())
         
     print x
