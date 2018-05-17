@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 MAX_ENTRIES = 10
 FOLDERMAX = 74
 FILEMAX = 499
+CORPUS = dict()
 
 BK_PATH = './WEBPAGES_RAW/bookkeeping.json'
 with open(BK_PATH) as f:
@@ -49,6 +50,27 @@ def prune_tokens(t):
         
     print x
     return x
+
+def add_to_corpus(t_list, docid):
+    for t in t_list:
+        if t not in CORPUS.keys():
+            CORPUS[t] = [docid]
+        else:
+            CORPUS[t].append(docid)
+
+def prune_corpus():
+    for t in CORPUS:
+        temp = CORPUS[t]
+        CORPUS[t] = compress_docids(temp)
+
+def compress_docids(doc_list):
+    result = []
+    temp = set(doc_list)
+    for doc in temp:
+        result.append((doc, doc_list.count(doc)))
+                            
+    return result
+
 def process_document(docid):
     print "***** Tokenizing document {}".format(docid)                              # DEBUG
     print "***** URL: " + get_url_from_docid(docid) + "\n"                          # DEBUG
@@ -61,6 +83,8 @@ def process_document(docid):
     tokens = strings.split()
     tokens = prune_tokens(tokens)
 
+    add_to_corpus(tokens, docid)
+    
     #print tokens
 	
     # add each token to a dict and write that to a json file here, i think
@@ -78,6 +102,9 @@ def main():
 
         except KeyError:
             print "File does not exist at", docid
+
+    prune_corpus()
+    print CORPUS
 
 if __name__ == "__main__":
     main()
