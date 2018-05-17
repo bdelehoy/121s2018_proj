@@ -1,0 +1,25 @@
+The database is structured to have the name "CS121PROJ" and a single collection called "tokens".
+
+
+Before doing ANYTHING in the MongoDB console, do this:
+    use CS121PROJ
+
+
+Exit the console with:
+	exit
+
+
+Delete all data from the database:
+    db.tokens.deleteMany({})
+
+
+Query the database:
+Find a single record:
+    db.tokens.find( {"token_to_find" : {$exists : true} } )
+Example:
+    db.tokens.find({"about":{$exists:true}})
+Would return all the docids and frequencies of the token "about".
+
+
+Find out the size of the database:
+    db.tokens.count()

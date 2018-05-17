@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 ###############
 ### GLOBALS ###
 ###############
-MAX_ENTRIES = 15
+MAX_ENTRIES = 100    # 36926 for ALL the documents
 FOLDERMAX = 74
 FILEMAX = 499
 
@@ -54,7 +54,7 @@ def prune_tokens(t):
     x = []    
     for i in t:
         # regex to only allow: alphanumeric chars, "-", ".", and "/"
-        temp = re.sub('[^0-9a-zA-Z\--/\d]+', ' ', i)
+        temp = re.sub('[^\da-zA-Z/-]+', ' ', i)
         x.extend(temp.split())
     #print x
     return x
@@ -88,17 +88,23 @@ def prune_corpus():
 
 def send_to_mongo():
     """Goes through the CORPUS one-by-one and adds each token+docid+freq to a local MongoDB database."""
-    print("Preparing to connect to a local MongoDB database....")
+    print "About to connect to a local MongoDB database."
+    raw_input("Press Enter once you have started the MongoDB server.... ")
     client = MongoClient()
-    print("Successfully connected.  Fetching database \"CS121PROJ.tokens\"....")
+    print "Successfully connected.  Fetching database \"CS121PROJ.tokens\"...."
     db = client.CS121PROJ
     collection = db.tokens
-    print("Successfully connected to CS121PROJ.tokens.  Clearing out the old database....")
-    collection.deleteMany({})
-    print("Database cleared.  Transferring corpus to the database....")
-    insert_ids = collection.insert_many([CORPUS])
-    print("Done!  IDs inserted:\n", insert_ids.inserted_ids)
-    print("There are now", collection.count(), "tokens in the database.")
+    print "Successfully connected to CS121PROJ.tokens.  Transferring corpus to the database...."
+
+    num_inserted = 0
+    one_doc = {"dummy": "dummy"}
+    for token,docids in CORPUS.iteritems():
+        one_doc = {token: docids}
+        insert_result = collection.insert_one(one_doc)
+        #print "Inserted " + token
+        num_inserted += 1
+    print "Done!  IDs inserted: ", num_inserted
+    print "There are now " + str(collection.count()) + " tokens in the database."
 
 
 ##############################
@@ -106,7 +112,7 @@ def send_to_mongo():
 ##############################
 def process_document(docid):
     """Iterate through the text of the document of docid and adds it to the global CORPUS."""
-    print "***** Tokenizing document {}".format(docid)                              # DEBUG
+    print "***** Tokenizing document ID: {}".format(docid)                              # DEBUG
     print "***** URL: " + get_url_from_docid(docid) + "\n"                          # DEBUG
     webpage_file = open("./WEBPAGES_RAW/" + docid)     # the HTML code of that document
     soup = BeautifulSoup(webpage_file, 'html.parser')
@@ -130,11 +136,13 @@ def main():
         except KeyError:
             print "File does not exist: ID =", docid
     prune_corpus()
-    send_to_mongo()
-
-    # Sample queries:
+    # Sample corpus queries (these have nothing to do with MongoDB, use the console for that):
     #print CORPUS["informatics"]
     #print CORPUS["ics"]
+    send_to_mongo()     # idea: send to Mongo after each document, not at the end.
+                        # this would imply having a separate corpus to each document
+                        # and we'd also have to not only insert documents into MongoDB, but UPDATE documents as well
+
     
 
 if __name__ == "__main__":
