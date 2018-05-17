@@ -1,12 +1,6 @@
-# game plan:
-# tokenize just the first few for testing purposes
-# use MongoDB to insert the inverted indices (tokens and docIDs) into a database
-
-# we're gonna have to have someone run this overnight so we can get all the tokens in the database
-# i (brandon) can do that on my desktop at home (ryzen 5 1600) at some point
-
 import json
 import pymongo
+from pymongo import MongoClient
 import re
 from bs4 import BeautifulSoup
 
@@ -92,6 +86,20 @@ def prune_corpus():
         temp = CORPUS[t]
         CORPUS[t] = compress_docids(temp)
 
+def send_to_mongo():
+    """Goes through the CORPUS one-by-one and adds each token+docid+freq to a local MongoDB database."""
+    print("Preparing to connect to a local MongoDB database....")
+    client = MongoClient()
+    print("Successfully connected.  Fetching database \"CS121PROJ.tokens\"....")
+    db = client.CS121PROJ
+    collection = db.tokens
+    print("Successfully connected to CS121PROJ.tokens.  Clearing out the old database....")
+    collection.deleteMany({})
+    print("Database cleared.  Transferring corpus to the database....")
+    insert_ids = collection.insert_many([CORPUS])
+    print("Done!  IDs inserted:\n", insert_ids.inserted_ids)
+    print("There are now", collection.count(), "tokens in the database.")
+
 
 ##############################
 ### PROGRAM FLOW FUNCTIONS ###
@@ -122,6 +130,7 @@ def main():
         except KeyError:
             print "File does not exist: ID =", docid
     prune_corpus()
+    send_to_mongo()
 
     # Sample queries:
     #print CORPUS["informatics"]
