@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 ###############
 ### GLOBALS ###
 ###############
-MAX_ENTRIES = 100    # 36926 for ALL the documents
+MAX_ENTRIES = 2000    # 36926 for ALL the documents
 FOLDERMAX = 74
 FILEMAX = 499
 
