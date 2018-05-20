@@ -20,7 +20,30 @@ def get_union_of_results(all_results):
     """all_results is [[(docid, freq), ... ], [(docid, freq), ... ], [(docid, freq), ... ]]
     This function returns a list of docids that each element in the list has.
     """
-    common_elements = ["0/1"]   # DUMMY VALUE, make this initialize to empty list
+    common = set()  # DUMMY VALUE, make this initialize to empty list
+    returnable=[]
+    if(len(all_results)==1):
+        for i in all_results[0]:
+            returnable.append(i[0])
+        return returnable
+    else:
+        for first in range(len(all_results)):
+            for second in range(len(all_results)):
+                if first!=second:
+                    for i in all_results[first]:
+                        for x in all_results[second]:
+                            if x[0]==i[0]:
+                                common.add(i[0])
+        return common
+                
+
+            
+
+
+
+
+
+
     # TODO
     # if "computer" appeared in 715 pages and "science" appeared in 497 pages, this function should return
     # only the docids of pages that contain both "computer" and "science"
@@ -33,26 +56,25 @@ def get_union_of_results(all_results):
 def get_results(tokens, query_list):
     """Obtains the results for the given search query."""
     print "Searching for: " + " ".join(query_list)
-    try:
-        # query_list is (possibly) a multiword query: ["informatics"], ["computer", "science"]
-        # we will iterate through each search term individually, add their results to a list, and only return the common elements
-        # "common elements" meaning common docids.  information about count may be lost.
-        all_results = []    # this a list of results
-        for q in query_list:
-            document =  tokens.find_one( {q : {"$exists" : True}} )
-            # ^that returns a dictionary that represents the item in the database: {"q" : [(docid, freq), ... ], "_id" : #########}
-            # so we have to index it one more time by "q" to get what we want
-            results = document[q]       # this is a list of (docid, freq)
-            all_results.append(results)
-            print "\tFound", len(results), "results for", q   # DEBUG!  Comment me out when you're done
 
-        # at this point, all_results is a list of lists of (docid, freq)
-        # find union of docs here
-        golden_docids = get_union_of_results(all_results)
+    # query_list is (possibly) a multiword query: ["informatics"], ["computer", "science"]
+    # we will iterate through each search term individually, add their results to a list, and only return the common elements
+    # "common elements" meaning common docids.  information about count may be lost.
+    all_results = []    # this a list of results
+    for q in query_list:
+        document =  tokens.find_one( {q : {"$exists" : True}} )
+        # ^that returns a dictionary that represents the item in the database: {"q" : [(docid, freq), ... ], "_id" : #########}
+        # so we have to index it one more time by "q" to get what we want
+        results = document[q]       # this is a list of (docid, freq)
+        all_results.append(results)
+        print "\tFound", len(results), "results for", q   # DEBUG!  Comment me out when you're done
 
-        print_out_urls(golden_docids, query_list)
-    except:
-        print "An error was encountered in searching for", query
+    # at this point, all_results is a list of lists of (docid, freq)
+    # find union of docs here
+    golden_docids = get_union_of_results(all_results)
+
+    print_out_urls(golden_docids, query_list)
+    
 
 
 def user_prompt():
