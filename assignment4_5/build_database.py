@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 ###############
 ### GLOBALS ###
 ###############
-MAX_ENTRIES = 2000    # 36926 for ALL the documents
+MAX_SITES = 2000    # 36926 for ALL the documents
 FOLDERMAX = 74
 FILEMAX = 499
 
@@ -36,7 +36,7 @@ def get_ids():
     for folder in range(FOLDERMAX+1):
         for file in range(FILEMAX+1):
             counter += 1
-            if counter <= MAX_ENTRIES:
+            if counter <= MAX_SITES:
                 one_id = str(folder) + '/' + str(file)
                 result.append(one_id)
     return result
@@ -128,7 +128,7 @@ def process_document(docid):
     webpage_file.close()
 
 def main():
-    print "Starting to build indices:"
+    print "Starting to build inverted indices database:"
     all_ids = get_ids()
     for docid in all_ids:
         try:
@@ -139,10 +139,7 @@ def main():
     # Sample corpus queries (these have nothing to do with MongoDB, use the console for that):
     #print CORPUS["informatics"]
     #print CORPUS["ics"]
-    send_to_mongo()     # idea: send to Mongo after each document, not at the end.
-                        # this would imply having a separate corpus to each document
-                        # and we'd also have to not only insert documents into MongoDB, but UPDATE documents as well
-
+    send_to_mongo()
     
 
 if __name__ == "__main__":
