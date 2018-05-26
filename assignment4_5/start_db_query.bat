@@ -1,2 +1,2 @@
-python query_database.py
+python query_database.py four
 pause > nul

@@ -2,11 +2,19 @@ from __future__ import division
 import json
 import pymongo
 from pymongo import MongoClient
+from numpy import log10
+import sys
 
 BK_PATH = './WEBPAGES_RAW/bookkeeping.json'
 with open(BK_PATH) as f:
     PAGES = json.load(f)
 
+# test this AT LEAST with:
+# uci
+# informatics
+# computer science
+# artificial intelligence
+# uci computer science
 
 def print_out_urls(docid_list, query):
     # TODO: Make this nicer
@@ -21,36 +29,17 @@ def get_union_of_results(all_results):
     This function returns a list of docids that each element in the list has.
     """
     common = set()  # DUMMY VALUE, make this initialize to empty list
-    returnable=[]
-    if(len(all_results)==1):
-        for i in all_results[0]:
-            returnable.append(i[0])
-        return returnable
+    if len(all_results) == 1:
+        return [i[0] for i in all_results[0]]
     else:
         for first in range(len(all_results)):
             for second in range(len(all_results)):
-                if first!=second:
+                if first != second:
                     for i in all_results[first]:
                         for x in all_results[second]:
-                            if x[0]==i[0]:
+                            if x[0] == i[0]:
                                 common.add(i[0])
         return common
-                
-
-            
-
-
-
-
-
-
-    # TODO
-    # if "computer" appeared in 715 pages and "science" appeared in 497 pages, this function should return
-    # only the docids of pages that contain both "computer" and "science"
-
-    # this should also work on single and 3+ word queries!!!!!!!!!!!!!!!!!
-    # we will lose information regarding token frequency but that's ok for now
-    return common_elements
 
 
 def get_results(tokens, query_list):
@@ -67,36 +56,32 @@ def get_results(tokens, query_list):
         # so we have to index it one more time by "q" to get what we want
         results = document[q]       # this is a list of (docid, freq)
         all_results.append(results)
-        print "\tFound", len(results), "results for", q   # DEBUG!  Comment me out when you're done
+        print "\t(DEBUG) Found", len(results), "results for", q   # DEBUG!  Comment me out when you're done
 
     # at this point, all_results is a list of lists of (docid, freq)
     # find union of docs here
     golden_docids = get_union_of_results(all_results)
-
     print_out_urls(golden_docids, query_list)
     
 
-
 def user_prompt():
-    print "\nWelcome to the ICS search system.  Connecting to the local database...."
-    
-    client = MongoClient()
-    print "Successfully connected.  Fetching database \"CS121PROJ.tokens\"...."
-    db = client.CS121PROJ
-    collection = db.tokens
-    print "Size of database on disk:", db.command("dbstats")["dataSize"] / 1000, "KB"       # 1000b to 1kb
-    
-    print "\nReady.  Please enter your search query below, with each word separated by a space.  Use CTRL-C to exit."
-    # test this AT LEAST with:
-    # uci
-    # informatics
-    # computer science
-    # artificial intelligence
-    # uci computer science
-    while True:
-        query_list = raw_input(">>> ").split()
-        #print(query_list)
-        get_results(collection, query_list)
+    args = sys.argv # args[0] is the name of the file, args[1:] is the search query
+    print "\nWelcome to the ICS search system."
+    if len(args) <= 1:
+        print "Please enter at least 1 search term as a command line argument.  Quitting...."
+    else:
+        print "Connecting to the local database \"CS121PROJ.tokens\"...."
+        try:
+            client = MongoClient()
+            db = client.CS121PROJ
+            collection = db.tokens
+            dbsize = db.command("dbstats")["dataSize"] / 1000   # 1000 bytes to 1kb
+        except:
+            print "An error occured in creating a connection to the local database.  Please start the server."
+        else:
+            print "Successfully connected.  Size of database on disk:", dbsize, "KB\n"
+            query_list = args[1:]
+            get_results(collection, query_list)
 
 
 def main():
