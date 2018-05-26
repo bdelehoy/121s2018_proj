@@ -8,6 +8,7 @@ import sys
 BK_PATH = './WEBPAGES_RAW/bookkeeping.json'
 with open(BK_PATH) as f:
     PAGES = json.load(f)
+NUM_DOCS = 2000
 
 # test this AT LEAST with:
 # uci
@@ -15,6 +16,28 @@ with open(BK_PATH) as f:
 # computer science
 # artificial intelligence
 # uci computer science
+
+# TF(term, docid): 1 + log10( how many times (term) appears in (docid) )
+# DF(term): how many documents (term) appears in
+#
+# IDF(DF): log10(N/DF), where N = the amount of unique documents in the database/corpus (2000 for now)
+# TF-IDF(TF, IDF): TF*IDF
+
+########################
+### TF-IDF FUNCTIONS ###
+########################
+def tf(freq):
+    """Returns the weighted term frequency of a given count.  freq is an int obtained from a separate posting list of (docid, freq)."""
+    return 1 + log10(freq)
+
+def idf(term):
+    """Returns the inverse document frequency of term.  term is a posting list of (docid, freq)."""
+    return log10(NUM_DOCS / len(term))
+
+def tfidf(tf, idf):
+    """Returns the final TF-IDF score of a pair of tf/idf scores for a nonspecific term."""
+    return tf*idf
+
 
 def print_out_urls(docid_list, query):
     # TODO: Make this nicer
@@ -26,7 +49,7 @@ def print_out_urls(docid_list, query):
 
 def get_union_of_results(all_results):
     """all_results is [[(docid, freq), ... ], [(docid, freq), ... ], [(docid, freq), ... ]]
-    This function returns a list of docids that each element in the list has.
+    This function returns a list of the docids that all elements appear in (but loses frequency information).
     """
     common = set()  # DUMMY VALUE, make this initialize to empty list
     if len(all_results) == 1:
@@ -49,17 +72,19 @@ def get_results(tokens, query_list):
     # query_list is (possibly) a multiword query: ["informatics"], ["computer", "science"]
     # we will iterate through each search term individually, add their results to a list, and only return the common elements
     # "common elements" meaning common docids.  information about count may be lost.
-    all_results = []    # this a list of results
+    all_results = []
     for q in query_list:
         document =  tokens.find_one( {q : {"$exists" : True}} )
         # ^that returns a dictionary that represents the item in the database: {"q" : [(docid, freq), ... ], "_id" : #########}
         # so we have to index it one more time by "q" to get what we want
+        if document == None:
+            print "\tNo results found for", q, "(skipping)"
+            continue
         results = document[q]       # this is a list of (docid, freq)
         all_results.append(results)
         print "\t(DEBUG) Found", len(results), "results for", q   # DEBUG!  Comment me out when you're done
 
     # at this point, all_results is a list of lists of (docid, freq)
-    # find union of docs here
     golden_docids = get_union_of_results(all_results)
     print_out_urls(golden_docids, query_list)
     
@@ -68,7 +93,7 @@ def user_prompt():
     args = sys.argv # args[0] is the name of the file, args[1:] is the search query
     print "\nWelcome to the ICS search system."
     if len(args) <= 1:
-        print "Please enter at least 1 search term as a command line argument.  Quitting...."
+        print "Please provide at least 1 search term as a command line argument.  Quitting...."
     else:
         print "Connecting to the local database \"CS121PROJ.tokens\"...."
         try:
