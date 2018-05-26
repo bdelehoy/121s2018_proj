@@ -107,6 +107,7 @@ def user_prompt():
             print "Successfully connected.  Size of database on disk:", dbsize, "KB\n"
             query_list = args[1:]
             get_results(collection, query_list)
+    sys.stdout.flush()
 
 
 def main():
