@@ -9,6 +9,7 @@ BK_PATH = './WEBPAGES_RAW/bookkeeping.json'
 with open(BK_PATH) as f:
     PAGES = json.load(f)
 NUM_DOCS = 2000
+DEBUG_ENABLED = False
 
 # test this AT LEAST with:
 # uci
@@ -23,6 +24,11 @@ NUM_DOCS = 2000
 # IDF(DF): log10(N/DF), where N = the amount of unique documents in the database/corpus (2000 for now)
 # TF-IDF(TF, IDF): TF*IDF
 
+def oprint(str):
+    """A print statement that only succeeds according to a global variable."""
+    if DEBUG_ENABLED:
+        print(str)
+
 ########################
 ### TF-IDF FUNCTIONS ###
 ########################
@@ -35,15 +41,17 @@ def idf(term):
     return log10(NUM_DOCS / len(term))
 
 def tfidf(tf, idf):
-    """Returns the final TF-IDF score of a pair of tf/idf scores for a nonspecific term."""
+    """Returns the final TF-IDF score of a pair of tf/idf scores for a nonspecific term/document pair."""
     return tf*idf
 
 
 def print_out_urls(docid_list, query):
     # TODO: Make this nicer
-    print "Found", len(docid_list), "result(s) for " + " ".join(query)+":"
+    oprint("Found "+str(len(docid_list))+" result(s) for " + " ".join(query)+":")
+    count = 0
     for docid in docid_list:
-        print docid, " | ", PAGES[docid]
+        print "{}\t{}\t{}".format(count, docid, PAGES[docid])   # print so it goes to stdout regardless of DEBUG_ENABLED
+        count += 1
     return
 
 
@@ -67,7 +75,7 @@ def get_union_of_results(all_results):
 
 def get_results(tokens, query_list):
     """Obtains the results for the given search query."""
-    print "Searching for: " + " ".join(query_list)
+    oprint("Searching for: " + " ".join(query_list))
 
     # query_list is (possibly) a multiword query: ["informatics"], ["computer", "science"]
     # we will iterate through each search term individually, add their results to a list, and only return the common elements
@@ -78,11 +86,10 @@ def get_results(tokens, query_list):
         # ^that returns a dictionary that represents the item in the database: {"q" : [(docid, freq), ... ], "_id" : #########}
         # so we have to index it one more time by "q" to get what we want
         if document == None:
-            print "\tNo results found for", q, "(skipping)"
+            oprint("\tNo results found for "+q+" (skipping)")
             continue
-        results = document[q]       # this is a list of (docid, freq)
-        all_results.append(results)
-        print "\t(DEBUG) Found", len(results), "results for", q   # DEBUG!  Comment me out when you're done
+        all_results.append(document[q])     # document[q] is a list of (docid, freq)
+        oprint("\t(DEBUG) Found "+str(len(document[q]))+" results for "+q)
 
     # at this point, all_results is a list of lists of (docid, freq)
     golden_docids = get_union_of_results(all_results)
@@ -91,20 +98,20 @@ def get_results(tokens, query_list):
 
 def user_prompt():
     args = sys.argv # args[0] is the name of the file, args[1:] is the search query
-    print "\nWelcome to the ICS search system."
+    oprint("\nWelcome to the ICS search system.")
     if len(args) <= 1:
-        print "Please provide at least 1 search term as a command line argument.  Quitting...."
+        oprint("Please provide at least 1 search term as a command line argument.  Quitting....")
     else:
-        print "Connecting to the local database \"CS121PROJ.tokens\"...."
+        oprint("Connecting to the local database \"CS121PROJ.tokens\"....")
         try:
             client = MongoClient()
             db = client.CS121PROJ
             collection = db.tokens
             dbsize = db.command("dbstats")["dataSize"] / 1000   # 1000 bytes to 1kb
         except:
-            print "An error occured in creating a connection to the local database.  Please start the server."
+            oprint("An error occured in creating a connection to the local database.  Please start the server.")
         else:
-            print "Successfully connected.  Size of database on disk:", dbsize, "KB\n"
+            oprint("Successfully connected.  Size of database on disk: "+str(dbsize)+" KB\n")
             query_list = args[1:]
             get_results(collection, query_list)
     sys.stdout.flush()
