@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from numpy import log10
 import sys
 
-BK_PATH = './WEBPAGES_RAW/bookkeeping.json'
+BK_PATH = '../WEBPAGES_RAW/bookkeeping.json'
 with open(BK_PATH) as f:
     PAGES = json.load(f)
 NUM_DOCS = 2000
@@ -50,12 +50,15 @@ def tfidf(termlen, docidpair):
 
 
 def print_out_urls(docid_list, query_list, final_tfidfs):
-    oprint("Found "+str(len(docid_list))+" result(s) for " + " ".join(query_list)+":")
-    count = 0
-    for docid in docid_list:
-        print "{}\t{}\t{}\t{}".format(count, docid, final_tfidfs[docid], PAGES[docid])   # print so it goes to stdout regardless of DEBUG_ENABLED
-        count += 1
-    return
+	oprint("Found "+str(len(docid_list))+" result(s) for " + " ".join(query_list)+":")
+	count = 0
+	if len(docid_list)==0:
+		print "No results"
+	else:
+		for docid in docid_list:
+			print "{}\t{}\t{}\t{}".format(count, docid, final_tfidfs[docid], PAGES[docid])   # print so it goes to stdout regardless of DEBUG_ENABLED
+			count += 1
+	return
 
 
 def get_intersection_of_results(all_results):
@@ -162,7 +165,7 @@ def user_prompt():
             oprint("An error occured in creating a connection to the local database.  Please start the server.")
         else:
             oprint("Successfully connected.  Size of database on disk: "+str(dbsize)+" KB\n")
-            query_list = args[1:]
+            query_list = [string.lower() for string in args[1:]]
             get_results(collection, query_list)
     sys.stdout.flush()
 

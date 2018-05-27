@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ICS Search</title>
+</head>
+<body>
+
+
+
+  <p style="margin-top:100px; text-align:center;">This is a search engine</p>
+  <form action="/query" method="POST" style="text-align:center;">
+    <input type="search" placeholder="Type in a search query" name="search_query">
+    <input type="submit" "value="Search">
+  </form>
+
+  <ul class="results">
+  <% for(var i=0; i<results.length; i++) {%>
+    <li class="result">
+      <span><%= results[i]%></span>
+    </li>
+  <% } %>
+</ul>
+
+</body>
+</html> 
