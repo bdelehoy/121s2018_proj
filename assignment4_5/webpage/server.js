@@ -9,7 +9,7 @@ var process = spawn('python', ["C:/Users/Shoshani/Documents/card-algorithms/Spac
 
 
 process.stdout.on('data', function (chunk) {
-
+    console.log("data returned")
     var textChunk = chunk.toString();// buffer to string
 
     console.log(textChunk);
