@@ -9,7 +9,7 @@ app.listen(3000, function() {console.log('listening on 3000')})
 
 
 
-/// query code
+/// db query code
 /*
 app.post('/', (req, res) => {
     var spawn = require("child_process").spawn;
@@ -26,7 +26,7 @@ app.post('/', (req, res) => {
 })
 */
 
-
+ //test script
 
 app.post('/', (req, res) => {
    // res.send('Hello World yall')
@@ -34,6 +34,7 @@ app.post('/', (req, res) => {
     var process = spawn('python', ["C:/Users/Shoshani/Documents/card-algorithms/Space-Jam/assignment4_5/webpage/compute_input.py", req.body.search_query ]);
 
     process.stdout.on('data', function (chunk) {
+        console.log("data returned")
 
         var textChunk = chunk.toString();// buffer to string
         res.send(textChunk);
