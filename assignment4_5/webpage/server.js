@@ -31,7 +31,7 @@ app.post('/', (req, res) => {
 app.post('/', (req, res) => {
    // res.send('Hello World yall')
     var spawn = require("child_process").spawn;
-    var process = spawn('python', ["C:/Users/Shoshani/Documents/card-algorithms/Space-Jam/assignment4_5/webpage/compute_input.py", req.body.search_query ]);
+    var process = spawn('python', ["compute_input.py", req.body.search_query ]);
 
     process.stdout.on('data', function (chunk) {
         console.log("data returned")
