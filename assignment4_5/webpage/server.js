@@ -21,6 +21,10 @@ app.post('/query', (req, res) => {
     console.log("POST sending this to query_database: ", req.body.search_query)
     
     var python_cmd_array = ["query_database.py"];
+    for (i = 0; i <= req.body.search_query.split().length; i++) {
+        python_cmd_array.push(req.body.search_query.split(" ")[i])
+    }
+    console.log("POST command array contains: ", python_cmd_array)
     // parse through req.body.search_query and append each individudal word to python_cmd_array
 
     var process = spawn('python', python_cmd_array);
