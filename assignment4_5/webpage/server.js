@@ -1,12 +1,19 @@
 console.log("testing")
 const express = require('express');
+const bodyParser = require('body-parser')
 const app = express();
+app.use(bodyParser.urlencoded({extended: true}))
 app.listen(3000, function() {console.log('listening on 3000')})
 
 
-app.get('/', (req, res) => {
+
+
+
+/// query code
+/*
+app.post('/', (req, res) => {
     var spawn = require("child_process").spawn;
-    var process = spawn('python', ["C:/Users/Shoshani/Documents/card-algorithms/Space-Jam/assignment4_5/query_database.py","four"]);
+    var process = spawn('python', ["C:/Users/Shoshani/Documents/card-algorithms/Space-Jam/assignment4_5/query_database.py", req.body.search_query]);
 
 
 
@@ -17,14 +24,14 @@ app.get('/', (req, res) => {
         re.send(textChunk);
     });
 })
+*/
 
 
 
-/*
-app.get('/', (req, res) => {
+app.post('/', (req, res) => {
    // res.send('Hello World yall')
     var spawn = require("child_process").spawn;
-    var process = spawn('python', ["C:/Users/Shoshani/Documents/card-algorithms/Space-Jam/assignment4_5/webpage/compute_input.py", "mayan"]);
+    var process = spawn('python', ["C:/Users/Shoshani/Documents/card-algorithms/Space-Jam/assignment4_5/webpage/compute_input.py", req.body.search_query ]);
 
     process.stdout.on('data', function (chunk) {
 
@@ -32,7 +39,7 @@ app.get('/', (req, res) => {
         res.send(textChunk);
     });
 })
-*/
+
 
 
 
