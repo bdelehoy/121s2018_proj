@@ -1,4 +1,13 @@
 html {
     background-color: #97beeb;
-	/*overflow: hidden;*/
+    font-family: "Helvetica"
+}
+
+#to_top {
+    background-color: #ffffff;
+    font-size: 1.5em;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    padding: 15px;
 }

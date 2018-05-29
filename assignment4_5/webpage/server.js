@@ -4,8 +4,9 @@ var spawn = require("child_process").spawn;
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: true}))
-app.listen(3000, function() {console.log('listening on 3000')})
+app.listen(3000, function() {console.log('listening on 3000\ngo to localhost:3000 in a web browser')})
 app.set('view engine', 'ejs')
+app.use(express.static(__dirname + '/views'));
 
 var textChunk = [];
 
@@ -15,6 +16,8 @@ app.get('/', (req, res) => {
    res.render('index.ejs', { results: textChunk })
     textChunk=[]
 })
+
+
 
 app.post('/query', (req, res) => {
     console.log("POST starting py process")
@@ -30,7 +33,7 @@ app.post('/query', (req, res) => {
         }
     }
     console.log("POST command array contains: ", python_cmd_array)
-    // parse through req.body.search_query and append each individudal word to python_cmd_array
+
 
     var process = spawn('python', python_cmd_array);
     console.log("POST process created")
@@ -39,21 +42,22 @@ app.post('/query', (req, res) => {
         var temp = []
         temp = chunk.toString().split("\n");
 
-        // temp is a list of lines.  split up each line and create a object.
         for(i = 0; i < temp.length; i++) {
             var fields = temp[i].split("\t")
-            console.log(fields)
+            //console.log(fields)
             textChunk.push(fields)
         }
-        //textChunk = textChunk.concat(temp)
         temp = []
     });
 
     process.stdout.on('end', function () {
         console.log("POST stdout from python finished.")
+        if(textChunk.length == 0) { 
+            //console.log("POST No results found!") 
+            textChunk.push(["", "", "No results.", ""]) // follow the format of a generic search result
+        } 
         res.redirect("/");
     })
-    console.log("POST complete.")
 
 })
     

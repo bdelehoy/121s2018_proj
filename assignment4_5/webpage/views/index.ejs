@@ -2,26 +2,32 @@
 <html>
 <head>
   <title>ICS Search</title>
-  <link rel="stylesheet" type="text/css" href="./style.css">
+  <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
 
-  <p style="margin-top:100px; text-align:center;">This is a search engine</p>
+  <h1 id="_top" style="margin-top:100px; text-align:center;">This is a search engine</h1>
   <form action="/query" method="POST" style="text-align:center;">
-    <input type="search" placeholder="Type in a search query" name="search_query">
-    <input type="submit" "value="Search">
+    <input type="search" placeholder="Enter search queries...." name="search_query">
+    <input type="submit" value="Search">
   </form>
 
   <ul class="results">
   <% for(var i=0; i<results.length; i++) {%>
     <li class="result">
-      <span id="rank"> <%= results[i][0]%> </span>
-      <span id="docid"> <%= results[i][1]%> </span>
-      <span id="tfidf"> <%= results[i][2]%> </span>
-      <span id="url"> <a href = //<%= results[i][3]%>> <%= results[i][3]%> </a> </span>
+      <span id="rank"> <%= results[i][0]%> </span> <br />
+      <span id="url"> <a href=//<%= results[i][3]%> target="_blank"> <%= results[i][3]%> </a> </span> <br />
+      <span id="docid"> ID: <%= results[i][1]%> </span> <br />
+      <span id="tfidf"> TF-IDF Score: <%= results[i][2]%> </span>
+      
+      <br /> <br />
     </li>
   <% } %>
 </ul>
+
+<div id="to_top">
+  <a href="#_top">Back to top</a>
+</div>
 
 </body>
 </html> 
