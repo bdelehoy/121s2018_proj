@@ -2,6 +2,7 @@
 spacetime-crawler-master/frontier_summary.txt
 spacetime-crawler-master/analytics.txt
 assignment4_5/WEBPAGES_RAW/*
+assignment4_5/webpage/node_modules/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
