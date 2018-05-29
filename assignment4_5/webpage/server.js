@@ -7,13 +7,13 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.listen(3000, function() {console.log('listening on 3000')})
 app.set('view engine', 'ejs')
 
-var textChunk = {};
+var textChunk = [];
 
 
 app.get('/', (req, res) => {
    //console.log("GET", textChunk)
    res.render('index.ejs', { results: textChunk })
-    textChunk={}
+    textChunk=[]
 })
 
 app.post('/query', (req, res) => {
@@ -36,7 +36,10 @@ app.post('/query', (req, res) => {
     console.log("POST process created")
     process.stdout.on('data', function (chunk) {
         console.log("POST stdout from python started.")
-        textChunk = chunk.toString().split("\n");
+        var temp = []
+        temp = chunk.toString().split("\n");
+        textChunk = textChunk.concat(temp)
+        temp = []
     });
 
     process.stdout.on('end', function () {
