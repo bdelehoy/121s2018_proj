@@ -9,55 +9,63 @@ app.set('view engine', 'ejs')
 app.use(express.static(__dirname + '/views'));
 
 var textChunk = [];
+var query_to_display_back_to_user;
 
 
 app.get('/', (req, res) => {
-   //console.log("GET", textChunk)
-   res.render('index.ejs', { results: textChunk })
+    console.log("GET")
+    res.render('index.ejs', { results: textChunk , user_query: query_to_display_back_to_user})
     textChunk=[]
+    query_to_display_back_to_user = ""
 })
 
 
 
 app.post('/query', (req, res) => {
-    console.log("POST starting py process")
-    console.log("POST sending this to query_database: ", req.body.search_query)
+    console.log("POST Received this from the user: ", req.body.search_query)
+    query_to_display_back_to_user = req.body.search_query;
     
+    // Setting up argv for the python script
     var python_cmd_array = ["query_database.py"];
-    for (i = 0; i <= req.body.search_query.split().length; i++) {
-        python_cmd_array.push(req.body.search_query.split(" ")[i])
+    var split_queries = req.body.search_query.split(" ");
+    for (i = 0; i <= split_queries.length; i++) {
+        if(split_queries[i] != "") {
+            python_cmd_array.push(split_queries[i])
+        }
     }
     for (i = 0; i < python_cmd_array.length; i++) {
         if (python_cmd_array[i] == undefined) {
             python_cmd_array.splice(i, 1)
         }
     }
-    console.log("POST command array contains: ", python_cmd_array)
+    console.log("POST sending this to query_database.py: ", python_cmd_array)
 
 
+    console.log("POST starting py process")
     var process = spawn('python', python_cmd_array);
-    console.log("POST process created")
     process.stdout.on('data', function (chunk) {
-        console.log("POST stdout from python started.")
+        console.log("POST received stdout from python.")
         var temp = []
         temp = chunk.toString().split("\n");
 
         for(i = 0; i < temp.length; i++) {
             var fields = temp[i].split("\t")
+            // fields[0] = Rank
+            // fields[1] = Doc ID
+            // fields[2] = TFIDF score
+            // fields[3] = URL
             //console.log(fields)
             textChunk.push(fields)
         }
-        temp = []
     });
 
     process.stdout.on('end', function () {
         console.log("POST stdout from python finished.")
-        if(textChunk.length == 0) { 
-            //console.log("POST No results found!") 
-            textChunk.push(["", "", "No results.", ""]) // follow the format of a generic search result
+        if(textChunk.length == 0) {
+            //console.log("POST No results found!")
+            textChunk.push(["", "n/a", "n/a", ""]) // follow the format of a generic search result
         } 
         res.redirect("/");
     })
 
 })
-    

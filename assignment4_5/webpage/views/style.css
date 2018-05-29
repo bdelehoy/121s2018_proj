@@ -1,13 +1,42 @@
 html {
     background-color: #97beeb;
-    font-family: "Helvetica"
+    font-family: "Helvetica";
+    word-wrap: break-word;
+}
+
+h1 {
+    margin-top:75px;
+    text-align:center;
+    font-size: 3em;
+}
+
+p {
+    text-align: center;
+}
+
+input[type=search] {
+    width: 18em;
+}
+
+#url {
+    font-size: 1.5em;
+}
+
+#docid {
+    font-size: 1.0em;
+}
+
+#tfidf {
+    font-size: 1.0em;
 }
 
 #to_top {
     background-color: #ffffff;
+    text-align: center;
     font-size: 1.5em;
     position: fixed;
     bottom: 0;
     right: 0;
-    padding: 15px;
+    left: 0;
+    padding: 0.2em;
 }

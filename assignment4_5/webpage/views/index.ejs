@@ -6,24 +6,37 @@
 </head>
 <body>
 
-  <h1 id="_top" style="margin-top:100px; text-align:center;">This is a search engine</h1>
+  <h1 id="_top">ICS Search</h1>
+  <p>CS121   /   Information Retrieval   /   Spring 2018</p>
+  <p>By Brandon Delehoy, Mayan Shoshani, Ulises Perez</p>
   <form action="/query" method="POST" style="text-align:center;">
     <input type="search" placeholder="Enter search queries...." name="search_query">
     <input type="submit" value="Search">
   </form>
 
+  <br />
+  <hr>
+
+  <% if(user_query) {%>
+  <p>Displaying results for: "<%= user_query %>" (<%= results.length - 1 %> found)</p>
+  <% } %>
+
   <ul class="results">
   <% for(var i=0; i<results.length; i++) {%>
-    <li class="result">
-      <span id="rank"> <%= results[i][0]%> </span> <br />
-      <span id="url"> <a href=//<%= results[i][3]%> target="_blank"> <%= results[i][3]%> </a> </span> <br />
-      <span id="docid"> ID: <%= results[i][1]%> </span> <br />
-      <span id="tfidf"> TF-IDF Score: <%= results[i][2]%> </span>
-      
-      <br /> <br />
-    </li>
+    <% if(results[i][0]) {%>
+      <li class="result">
+        <!--- <span id="rank"> <%= results[i][0]%> </span> <br /> -->
+        <span id="url"> <a href=//<%= results[i][3]%> target="_blank"> <%= results[i][3]%> </a> </span> <br />
+        <span id="docid"> ID: <%= results[i][1]%> </span> <br />
+        <span id="tfidf"> TF-IDF Score: <%= results[i][2]%> </span>
+        
+        <br /> <br />
+      </li>
+    <% } %>
   <% } %>
 </ul>
+
+<br /> <br />
 
 <div id="to_top">
   <a href="#_top">Back to top</a>
