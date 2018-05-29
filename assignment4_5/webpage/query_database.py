@@ -56,7 +56,7 @@ def print_out_urls(docid_list, query_list, final_tfidfs):
 		print "No results"
 	else:
 		for docid in docid_list:
-			print "{}\t{}\t{}\t{}".format(count, docid, final_tfidfs[docid], PAGES[docid])   # print so it goes to stdout regardless of DEBUG_ENABLED
+			print "{}\t{}\t{}\t{}".format(count+1, docid, final_tfidfs[docid], PAGES[docid])   # print so it goes to stdout regardless of DEBUG_ENABLED
 			count += 1
 	return
 
