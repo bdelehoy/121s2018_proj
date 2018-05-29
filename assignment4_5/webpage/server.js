@@ -38,7 +38,14 @@ app.post('/query', (req, res) => {
         console.log("POST stdout from python started.")
         var temp = []
         temp = chunk.toString().split("\n");
-        textChunk = textChunk.concat(temp)
+
+        // temp is a list of lines.  split up each line and create a object.
+        for(i = 0; i < temp.length; i++) {
+            var fields = temp[i].split("\t")
+            console.log(fields)
+            textChunk.push(fields)
+        }
+        //textChunk = textChunk.concat(temp)
         temp = []
     });
 

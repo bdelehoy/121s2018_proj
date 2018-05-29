@@ -15,7 +15,10 @@
   <ul class="results">
   <% for(var i=0; i<results.length; i++) {%>
     <li class="result">
-      <span><%= results[i]%></span>
+      <span id="rank"> <%= results[i][0]%> </span>
+      <span id="docid"> <%= results[i][1]%> </span>
+      <span id="tfidf"> <%= results[i][2]%> </span>
+      <span id="url"> <a href = //<%= results[i][3]%>> <%= results[i][3]%> </a> </span>
     </li>
   <% } %>
 </ul>
