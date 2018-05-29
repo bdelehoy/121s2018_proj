@@ -24,6 +24,11 @@ app.post('/query', (req, res) => {
     for (i = 0; i <= req.body.search_query.split().length; i++) {
         python_cmd_array.push(req.body.search_query.split(" ")[i])
     }
+    for (i = 0; i < python_cmd_array.length; i++) {
+        if (python_cmd_array[i] == undefined) {
+            python_cmd_array.splice(i, 1)
+        }
+    }
     console.log("POST command array contains: ", python_cmd_array)
     // parse through req.body.search_query and append each individudal word to python_cmd_array
 
